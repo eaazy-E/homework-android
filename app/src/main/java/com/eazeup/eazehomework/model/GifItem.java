@@ -1,22 +1,31 @@
 package com.eazeup.eazehomework.model;
 
+import android.support.annotation.NonNull;
+
 /**
  * Item with which to populate the adapter of images
  */
 public class GifItem {
 
-    private String mImageUrl;
-    private String mShareUrl;
-    private String mId;
+    private final String mImageUrl;
+    private final String mImageUrlSmall;
+    private final String mShareUrl;
+    private final String mId;
 
-    public GifItem(String imageUrl, String shareUrl, String id) {
+    public GifItem(@NonNull String imageUrl, @NonNull String imageUrlSmall, @NonNull String shareUrl,
+                   @NonNull String id) {
         mImageUrl = imageUrl;
+        mImageUrlSmall = imageUrlSmall;
         mShareUrl = shareUrl;
         mId = id;
     }
 
     public String getImageUrl() {
         return mImageUrl;
+    }
+
+    public String getImageUrlSmall() {
+        return mImageUrlSmall;
     }
 
     public String getShareUrl() {

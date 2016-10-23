@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < giphyItems.length; i++) {
                         GiphyResponse.Data curGiphy = giphyItems[i];
                         if (!TextUtils.isEmpty(curGiphy.images.fixedHeightSmallStill.url)) {
-                            gifs.add(new GifItem(curGiphy.images.fixedHeightSmallStill.url,
+                            gifs.add(new GifItem(curGiphy.images.original.url,
+                                    curGiphy.images.fixedHeightSmallStill.url,
                                     curGiphy.bitlyGifUrl, curGiphy.id));
                         }
                     }

@@ -1,6 +1,7 @@
 package com.eazeup.eazehomework.view;
 
 import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,9 +31,17 @@ public class GifAdapter extends RecyclerView.Adapter<GifAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         if (position < mGifs.size()) {
-            Picasso.with(mContext).load(mGifs.get(position).getImageUrl()).into(viewHolder.image);
+            Picasso.with(mContext).load(mGifs.get(position).getImageUrlSmall()).into(viewHolder.image);
+            viewHolder.image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImageView fullScreenImageView = new ImageView(mContext);
+                    Picasso.with(mContext).load(mGifs.get(position).getImageUrl()).into(fullScreenImageView);
+                    new AlertDialog.Builder(mContext).setView(fullScreenImageView).show();
+                }
+            });
         } else {
             viewHolder.image.setImageResource(android.R.drawable.gallery_thumb);
         }
