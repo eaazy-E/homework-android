@@ -207,7 +207,7 @@ public class GifGridFragment extends Fragment {
     }
 
     /**
-     * Callback for the Activity to implement on search
+     * Callbacks for the Activity to implement on search and on gif click
      */
     public interface OnSearchCallback {
         void onSearch(String searchKey);

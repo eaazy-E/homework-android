@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements GifGridFragment.O
         setContentView(R.layout.activity_main);
         GifGridFragment fragment = GifGridFragment.newInstance(this);
         Bundle args = new Bundle();
+        // Initially show trending gifs
         args.putString(SEARCH_TYPE, EXTRA_TRENDING);
         fragment.setArguments(args);
         String simpleName = GifGridFragment.class.getSimpleName();
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements GifGridFragment.O
                 fragment, simpleName).addToBackStack(simpleName).commit();
     }
 
+    // Implementation of gif search callback
     @Override
     public void onSearch(String searchKey) {
         GifGridFragment fragment = GifGridFragment.newInstance(this);
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements GifGridFragment.O
                 searchKey).addToBackStack(searchKey).commit();
     }
 
+    // Implementation of gif view details callback
     @Override
     public void onDetails(String id) {
         GifDetailsFragment fragment = new GifDetailsFragment();
