@@ -2,22 +2,20 @@ package com.eazeup.eazehomework.fragments;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,13 +25,6 @@ import com.eazeup.eazehomework.R;
 import com.eazeup.eazehomework.service.GiphyDetailResponse;
 import com.eazeup.eazehomework.service.GiphyResponse;
 import com.eazeup.eazehomework.service.GiphyServiceManager;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -104,6 +95,7 @@ public class GifDetailsFragment extends Fragment {
                     gifWebView.loadUrl(mData.images.original.url);
                     // Set the height and width and add it into the layout
                     gifWebView.setLayoutParams(new LinearLayout.LayoutParams(newWidth, newHeight));
+                    gifWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
                     mGifContainer.addView(gifWebView, 0);
                     // Get the domain from the source URL
                     String[] sourceArr = mData.source.split("/");
@@ -116,7 +108,9 @@ public class GifDetailsFragment extends Fragment {
                         mSourceText.setText(String.format(getString(R.string.gif_source), domain));
                     } else {
                         // Otherwise, use the full string
-                        mSourceText.setText(String.format(getString(R.string.gif_source), mData.source));
+                        if (!TextUtils.isEmpty(mData.source)) {
+                            mSourceText.setText(String.format(getString(R.string.gif_source), mData.source));
+                        }
                     }
                 } else {
                     Log.e(TAG, "Gif details call unsuccessful, status = " + response.code());
@@ -148,46 +142,12 @@ public class GifDetailsFragment extends Fragment {
     }
 
     private void shareImage() {
-        Target target = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType("image/jpeg");
-                shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
-                try {
-                    f.createNewFile();
-                    FileOutputStream fo = new FileOutputStream(f);
-                    fo.write(bytes.toByteArray());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/temporary_file.jpg"));
-                startActivity(Intent.createChooser(shareIntent, "Share Image"));
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                Log.e(TAG, "Compress to bitmap failed, share URL");
-                Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-                shareIntent.setType("text/plain");
-                shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, mData.bitlyGifUrl);
-
-                startActivity(Intent.createChooser(shareIntent, "Share GIF"));
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-                // Empty implementation
-            }
-        };
-        if (mData != null) {
-            // Future optimization: stop in onPause()
-            Picasso.with(getContext()).load(mData.images.original.url).into(target);
-        }
+        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.gif_share_subject));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mData.bitlyGifUrl);
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.gif_share_url_desc)));
     }
 
 }

@@ -3,7 +3,7 @@ package com.eazeup.eazehomework.view;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-//import static com.eazeup.eazehomework.service.GiphyServiceManager.GIFS_LIMIT;
+import static com.eazeup.eazehomework.service.GiphyServiceManager.GIFS_LIMIT;
 
 /**
  * https://github.com/ardok/codepath
@@ -11,7 +11,7 @@ import android.support.v7.widget.RecyclerView;
 public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
     // The minimum amount of items to have below your current scroll position
     // before loading more.
-    private int visibleThreshold = 24;
+    private int visibleThreshold = GIFS_LIMIT;
     // The current offset index of data you have loaded
     private int currentPage = 0;
     // The total number of items in the dataset after the last load

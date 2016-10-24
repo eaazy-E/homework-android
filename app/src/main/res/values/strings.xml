@@ -6,4 +6,6 @@
     <string name="error_generic">Oops! Something went wrong.</string>
     <string name="title_details">GIF details</string>
     <string name="gif_source">Source: %s</string>
+    <string name="gif_share_subject">Check out this dank meme!</string>
+    <string name="gif_share_url_desc">Share GIF</string>
 </resources>

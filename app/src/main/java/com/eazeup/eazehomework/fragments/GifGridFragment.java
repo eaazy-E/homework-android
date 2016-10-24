@@ -44,7 +44,6 @@ public class GifGridFragment extends Fragment {
     private FloatingActionButton mFab;
     private OnSearchCallback mCallback;
     private String mSearchString;
-    private int mCurrentPage = 0;
     private EndlessRecyclerViewScrollListener mScrollListener;
 
     private static final int NUM_COLS = 3;
@@ -135,6 +134,9 @@ public class GifGridFragment extends Fragment {
         }
     }
 
+    /**
+     * Initial call to set up the grid of gifs
+     */
     private void setupGrid() {
         mGifAdapter = new GifAdapter(mContext, mCallback, Collections.EMPTY_LIST);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, NUM_COLS);
@@ -143,13 +145,10 @@ public class GifGridFragment extends Fragment {
         mScrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                if (page > mCurrentPage) {
-                    mCurrentPage = page;
-                    if (!TextUtils.isEmpty(mSearchString)) {
-                        doSearch(mSearchString, page);
-                    } else {
-                        doGetTrending(page);
-                    }
+                if (!TextUtils.isEmpty(mSearchString)) {
+                    doSearch(mSearchString, page);
+                } else {
+                    doGetTrending(page);
                 }
             }
         };
