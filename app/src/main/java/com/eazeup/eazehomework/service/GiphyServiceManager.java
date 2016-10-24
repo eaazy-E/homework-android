@@ -14,6 +14,7 @@ public class GiphyServiceManager {
     private static final String TAG = GiphyServiceManager.class.getSimpleName();
     private static final String BASE_URL = "http://api.giphy.com/v1/gifs/";
     private static final String TOKEN = "dc6zaTOxFJmzC";
+    public static final int GIFS_LIMIT = 24;
 
     private static final Map<String, String> QUERY_API_TOKEN;
     static {
@@ -43,13 +44,13 @@ public class GiphyServiceManager {
         mService = retrofit.create(GiphyService.class);
     }
 
-    public void getTrending(final Callback<GiphyResponse> callback) {
-        Call<GiphyResponse> call = mService.getTrending(TOKEN);
+    public void getTrending(int offset, final Callback<GiphyResponse> callback) {
+        Call<GiphyResponse> call = mService.getTrending(offset, GIFS_LIMIT, TOKEN);
         call.enqueue(callback);
     }
 
-    public void getSearch(String searchQuery, final Callback<GiphyResponse> callback) {
-        Call<GiphyResponse> call = mService.getSearch(searchQuery, TOKEN);
+    public void getSearch(String searchQuery, int offset, final Callback<GiphyResponse> callback) {
+        Call<GiphyResponse> call = mService.getSearch(searchQuery, offset, GIFS_LIMIT, TOKEN);
         call.enqueue(callback);
     }
 

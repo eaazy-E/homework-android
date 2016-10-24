@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,10 +23,11 @@ import com.eazeup.eazehomework.R;
 import com.eazeup.eazehomework.model.GifItem;
 import com.eazeup.eazehomework.service.GiphyResponse;
 import com.eazeup.eazehomework.service.GiphyServiceManager;
+import com.eazeup.eazehomework.view.EndlessRecyclerViewScrollListener;
 import com.eazeup.eazehomework.view.GifAdapter;
-import com.eazeup.eazehomework.view.GridAutofitLayoutManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -41,8 +43,11 @@ public class GifGridFragment extends Fragment {
     private GifAdapter mGifAdapter;
     private FloatingActionButton mFab;
     private OnSearchCallback mCallback;
+    private String mSearchString;
+    private int mCurrentPage = 0;
+    private EndlessRecyclerViewScrollListener mScrollListener;
 
-    private static final int COL_WIDTH = 300;
+    private static final int NUM_COLS = 3;
 
     public static GifGridFragment newInstance(OnSearchCallback callback) {
         GifGridFragment fragment = new GifGridFragment();
@@ -68,6 +73,9 @@ public class GifGridFragment extends Fragment {
 
         // Setup the FAB for performing giphy search
         setupSearchButton();
+
+        // Initialize the empty grid
+        setupGrid();
 
         // Get the fragment's arguments so that we know whether to show trending gifs,
         // or do a search
@@ -127,11 +135,33 @@ public class GifGridFragment extends Fragment {
         }
     }
 
+    private void setupGrid() {
+        mGifAdapter = new GifAdapter(mContext, mCallback, Collections.EMPTY_LIST);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, NUM_COLS);
+        mGifsView.setLayoutManager(gridLayoutManager);
+        mGifsView.setAdapter(mGifAdapter);
+        mScrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                if (page > mCurrentPage) {
+                    mCurrentPage = page;
+                    if (!TextUtils.isEmpty(mSearchString)) {
+                        doSearch(mSearchString, page);
+                    } else {
+                        doGetTrending(page);
+                    }
+                }
+            }
+        };
+        mGifsView.addOnScrollListener(mScrollListener);
+    }
+
     /**
      * Show the gifs returned from a network call in the grid.
+     *
      * @param giphyItems An array of gifs returned from a giphy API call.
      */
-    protected void showGiphyResults(GiphyResponse.Data[] giphyItems) {
+    private void showGiphyResults(GiphyResponse.Data[] giphyItems) {
         // Digest the relevant items from the raw response
         // into a list to populate the adapter
         List<GifItem> gifs = new ArrayList<>();
@@ -143,18 +173,28 @@ public class GifGridFragment extends Fragment {
                         curGiphy.bitlyGifUrl, curGiphy.id));
             }
         }
-        // Create the adapter
-        mGifAdapter = new GifAdapter(mContext, mCallback, gifs);
-        // Set up the list
-        mGifsView.setLayoutManager(new GridAutofitLayoutManager(mContext, COL_WIDTH));
-        mGifsView.setAdapter(mGifAdapter);
+        // Set up the adapter
+        if (mGifAdapter == null) {
+            mGifAdapter = new GifAdapter(mContext, mCallback, gifs);
+        } else {
+            mGifAdapter.addItems(gifs);
+        }
+    }
+
+    /**
+     * Call the GET trending giphy endpoint from offset 0 and display the results
+     */
+    private void doGetTrending() {
+        this.doGetTrending(0);
     }
 
     /**
      * Call the GET trending giphy endpoint and display the results
+     *
+     * @param offset results offset
      */
-    private void doGetTrending() {
-        GiphyServiceManager.get().getTrending(new Callback<GiphyResponse>() {
+    private void doGetTrending(int offset) {
+        GiphyServiceManager.get().getTrending(offset, new Callback<GiphyResponse>() {
             @Override
             public void onResponse(Call<GiphyResponse> call, Response<GiphyResponse> response) {
                 if (response.isSuccessful()) {
@@ -174,11 +214,24 @@ public class GifGridFragment extends Fragment {
     }
 
     /**
-     * Call the GET search giphy endpoint and display the results.
+     * Call the GET search giphy endpoint from offset 0 and display the results.
+     *
      * @param searchKey The search query string
      */
     private void doSearch(String searchKey) {
-        GiphyServiceManager.get().getSearch(searchKey, new Callback<GiphyResponse>() {
+        mSearchString = searchKey;
+        this.doSearch(mSearchString, 0);
+    }
+
+    /**
+     * Call the GET search giphy endpoint and display the results.
+     *
+     * @param searchKey The search query string
+     * @param offset    The results page offset
+     */
+    private void doSearch(String searchKey, int offset) {
+        mSearchString = searchKey;
+        GiphyServiceManager.get().getSearch(mSearchString, offset, new Callback<GiphyResponse>() {
             @Override
             public void onResponse(Call<GiphyResponse> call, Response<GiphyResponse> response) {
                 if (response.isSuccessful()) {
@@ -211,6 +264,7 @@ public class GifGridFragment extends Fragment {
      */
     public interface OnSearchCallback {
         void onSearch(String searchKey);
+
         void onDetails(String id);
     }
 

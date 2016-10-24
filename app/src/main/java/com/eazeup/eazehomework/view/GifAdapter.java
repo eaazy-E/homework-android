@@ -29,6 +29,17 @@ public class GifAdapter extends RecyclerView.Adapter<GifAdapter.ViewHolder> {
         mGifs = gifs;
     }
 
+    public void addItems(List<GifItem> gifs) {
+        int prevEnd = mGifs.size();
+        if (prevEnd == 0) {
+            mGifs = gifs;
+            notifyDataSetChanged();
+        } else {
+            mGifs.addAll(gifs);
+            notifyItemRangeInserted(prevEnd, gifs.size() - 1);
+        }
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grid, parent, false);
