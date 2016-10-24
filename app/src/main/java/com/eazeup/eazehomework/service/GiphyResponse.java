@@ -15,6 +15,7 @@ public class GiphyResponse {
         @SerializedName("bitly_gif_url")
         public String bitlyGifUrl;
         public Images images;
+        public String source;
     }
 
     public static class Images {

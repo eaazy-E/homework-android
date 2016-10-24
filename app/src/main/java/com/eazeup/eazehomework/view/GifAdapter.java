@@ -10,6 +10,8 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.eazeup.eazehomework.R;
+import com.eazeup.eazehomework.fragments.GifDetailsFragment;
+import com.eazeup.eazehomework.fragments.GifGridFragment;
 import com.eazeup.eazehomework.model.GifItem;
 import com.squareup.picasso.Picasso;
 
@@ -19,9 +21,11 @@ public class GifAdapter extends RecyclerView.Adapter<GifAdapter.ViewHolder> {
 
     private List<GifItem> mGifs;
     private Context mContext;
+    private GifGridFragment.OnSearchCallback mCallback;
 
-    public GifAdapter(Context context, List<GifItem> gifs) {
+    public GifAdapter(Context context, GifGridFragment.OnSearchCallback callback, List<GifItem> gifs) {
         mContext = context;
+        mCallback = callback;
         mGifs = gifs;
     }
 
@@ -38,9 +42,7 @@ public class GifAdapter extends RecyclerView.Adapter<GifAdapter.ViewHolder> {
             viewHolder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    WebView gifWebView = new WebView(mContext);
-                    gifWebView.loadUrl(mGifs.get(position).getImageUrl());
-                    new AlertDialog.Builder(mContext).setView(gifWebView).show();
+                    mCallback.onDetails(mGifs.get(position).getId());
                 }
             });
         } else {

@@ -3,6 +3,7 @@ package com.eazeup.eazehomework;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.eazeup.eazehomework.fragments.GifDetailsFragment;
 import com.eazeup.eazehomework.fragments.GifGridFragment;
 
 public class MainActivity extends AppCompatActivity implements GifGridFragment.OnSearchCallback {
@@ -11,8 +12,10 @@ public class MainActivity extends AppCompatActivity implements GifGridFragment.O
 
     public static final String SEARCH_TYPE = "search_type";
     public static final String SEARCH_QUERY = "search_query";
+    public static final String EXTRA_DETAILS = "search_details";
     public static final String EXTRA_TRENDING = "trending";
     public static final String EXTRA_SEARCH = "search";
+    public static final String EXTRA_ID = "id";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,5 +39,16 @@ public class MainActivity extends AppCompatActivity implements GifGridFragment.O
         fragment.setArguments(args);
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment,
                 searchKey).addToBackStack(searchKey).commit();
+    }
+
+    @Override
+    public void onDetails(String id) {
+        GifDetailsFragment fragment = new GifDetailsFragment();
+        Bundle args = new Bundle();
+        args.putString(SEARCH_TYPE, EXTRA_DETAILS);
+        args.putString(EXTRA_ID, id);
+        fragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment, id)
+                .addToBackStack(id).commit();
     }
 }

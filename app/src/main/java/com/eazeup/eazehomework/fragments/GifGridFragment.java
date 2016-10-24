@@ -144,7 +144,7 @@ public class GifGridFragment extends Fragment {
             }
         }
         // Create the adapter
-        mGifAdapter = new GifAdapter(mContext, gifs);
+        mGifAdapter = new GifAdapter(mContext, mCallback, gifs);
         // Set up the list
         mGifsView.setLayoutManager(new GridAutofitLayoutManager(mContext, COL_WIDTH));
         mGifsView.setAdapter(mGifAdapter);
@@ -211,6 +211,7 @@ public class GifGridFragment extends Fragment {
      */
     public interface OnSearchCallback {
         void onSearch(String searchKey);
+        void onDetails(String id);
     }
 
 }

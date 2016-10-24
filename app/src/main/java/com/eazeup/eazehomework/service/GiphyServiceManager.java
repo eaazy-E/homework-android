@@ -3,6 +3,8 @@ package com.eazeup.eazehomework.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -29,8 +31,13 @@ public class GiphyServiceManager {
 
     private GiphyServiceManager() {
         // Instantiate the Retrofit object for HTTP calls
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 .build();
 
         mService = retrofit.create(GiphyService.class);
@@ -43,6 +50,11 @@ public class GiphyServiceManager {
 
     public void getSearch(String searchQuery, final Callback<GiphyResponse> callback) {
         Call<GiphyResponse> call = mService.getSearch(searchQuery, TOKEN);
+        call.enqueue(callback);
+    }
+
+    public void getGifById(String gifId, final Callback<GiphyDetailResponse> callback) {
+        Call<GiphyDetailResponse> call = mService.getById(gifId, TOKEN);
         call.enqueue(callback);
     }
 }
