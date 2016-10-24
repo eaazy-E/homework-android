@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Eaze Homework</string>
     <string name="title_trending">Trending GIFs</string>
+    <string name="search_title">Giphy</string>
+    <string name="search_hint">Search all the GIFs</string>
 </resources>

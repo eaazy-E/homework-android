@@ -40,4 +40,9 @@ public class GiphyServiceManager {
         Call<GiphyResponse> call = mService.getTrending(TOKEN);
         call.enqueue(callback);
     }
+
+    public void getSearch(String searchQuery, final Callback<GiphyResponse> callback) {
+        Call<GiphyResponse> call = mService.getSearch(searchQuery, TOKEN);
+        call.enqueue(callback);
+    }
 }

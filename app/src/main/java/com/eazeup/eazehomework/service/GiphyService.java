@@ -9,4 +9,7 @@ public interface GiphyService {
 
     @GET("trending")
     Call<GiphyResponse> getTrending(@Query("api_key") String apiKey);
+
+    @GET("search")
+    Call<GiphyResponse> getSearch(@Query("q") String searchQuery, @Query("api_key") String apiKey);
 }

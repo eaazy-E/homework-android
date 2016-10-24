@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.eazeup.eazehomework.R;
@@ -37,9 +38,9 @@ public class GifAdapter extends RecyclerView.Adapter<GifAdapter.ViewHolder> {
             viewHolder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ImageView fullScreenImageView = new ImageView(mContext);
-                    Picasso.with(mContext).load(mGifs.get(position).getImageUrl()).into(fullScreenImageView);
-                    new AlertDialog.Builder(mContext).setView(fullScreenImageView).show();
+                    WebView gifWebView = new WebView(mContext);
+                    gifWebView.loadUrl(mGifs.get(position).getImageUrl());
+                    new AlertDialog.Builder(mContext).setView(gifWebView).show();
                 }
             });
         } else {
