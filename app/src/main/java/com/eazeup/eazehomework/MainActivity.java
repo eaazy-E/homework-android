@@ -54,4 +54,14 @@ public class MainActivity extends AppCompatActivity implements GifGridFragment.O
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment, id)
                 .addToBackStack(id).commit();
     }
+
+    @Override
+    public void onBackPressed() {
+        // Ensure that we do not show a blank activity
+        if (getSupportFragmentManager().getBackStackEntryCount() <= 1) {
+            finishAffinity();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
