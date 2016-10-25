@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -45,6 +46,7 @@ public class GifGridFragment extends Fragment {
     private OnSearchCallback mCallback;
     private String mSearchString;
     private EndlessRecyclerViewScrollListener mScrollListener;
+    private SwipeRefreshLayout mSwipeContainer;
 
     private static final int NUM_COLS = 3;
 
@@ -69,12 +71,16 @@ public class GifGridFragment extends Fragment {
         // Find the views
         mGifsView = (RecyclerView) rootView.findViewById(R.id.main_gifs);
         mFab = (FloatingActionButton) rootView.findViewById(R.id.main_search);
+        mSwipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.main_swipe_container);
 
         // Setup the FAB for performing giphy search
         setupSearchButton();
 
         // Initialize the empty grid
         setupGrid();
+
+        // Set up the swipe refresh
+        setupSwipeRefresh();
 
         // Get the fragment's arguments so that we know whether to show trending gifs,
         // or do a search
@@ -129,6 +135,26 @@ public class GifGridFragment extends Fragment {
                                     }
                                 }
                             }).show();
+                }
+            });
+        }
+    }
+
+    /**
+     * Set up the swipe-to-refresh functionality
+     */
+    private void setupSwipeRefresh() {
+        if (mSwipeContainer != null) {
+            mSwipeContainer.setColorSchemeColors(getResources().getColor(R.color.colorPrimary),
+                    getResources().getColor(R.color.colorPrimaryDark));
+            mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    if (TextUtils.isEmpty(mSearchString)) {
+                        doGetTrending();
+                    } else {
+                        doSearch(mSearchString);
+                    }
                 }
             });
         }
@@ -196,6 +222,7 @@ public class GifGridFragment extends Fragment {
         GiphyServiceManager.get().getTrending(offset, new Callback<GiphyResponse>() {
             @Override
             public void onResponse(Call<GiphyResponse> call, Response<GiphyResponse> response) {
+                mSwipeContainer.setRefreshing(false);
                 if (response.isSuccessful()) {
                     showGiphyResults(response.body().data);
                 } else {
@@ -206,6 +233,7 @@ public class GifGridFragment extends Fragment {
 
             @Override
             public void onFailure(Call<GiphyResponse> call, Throwable t) {
+                mSwipeContainer.setRefreshing(false);
                 Log.e(TAG, "Giphy get trending failed: " + t.getMessage());
                 showGenericErrorDialog();
             }
@@ -233,6 +261,7 @@ public class GifGridFragment extends Fragment {
         GiphyServiceManager.get().getSearch(mSearchString, offset, new Callback<GiphyResponse>() {
             @Override
             public void onResponse(Call<GiphyResponse> call, Response<GiphyResponse> response) {
+                mSwipeContainer.setRefreshing(false);
                 if (response.isSuccessful()) {
                     showGiphyResults(response.body().data);
                 } else {
@@ -243,6 +272,7 @@ public class GifGridFragment extends Fragment {
 
             @Override
             public void onFailure(Call<GiphyResponse> call, Throwable t) {
+                mSwipeContainer.setRefreshing(false);
                 Log.e(TAG, "Giphy search failed: " + t.getMessage());
                 showGenericErrorDialog();
             }
