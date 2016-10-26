@@ -26,6 +26,7 @@ import com.eazeup.eazehomework.service.GiphyResponse;
 import com.eazeup.eazehomework.service.GiphyServiceManager;
 import com.eazeup.eazehomework.view.EndlessRecyclerViewScrollListener;
 import com.eazeup.eazehomework.view.GifAdapter;
+import com.eazeup.eazehomework.view.GridAutofitLayoutManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,11 +49,10 @@ public class GifGridFragment extends Fragment {
     private EndlessRecyclerViewScrollListener mScrollListener;
     private SwipeRefreshLayout mSwipeContainer;
 
-    private static final int NUM_COLS = 3;
+    private static final int COL_WIDTH = 300;
 
-    public static GifGridFragment newInstance(OnSearchCallback callback) {
+    public static GifGridFragment newInstance() {
         GifGridFragment fragment = new GifGridFragment();
-        fragment.mCallback = callback;
         return fragment;
     }
 
@@ -60,6 +60,7 @@ public class GifGridFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mContext = getContext();
+        mCallback = (OnSearchCallback) getActivity();
         View rootView = inflater.from(mContext).inflate(R.layout.gif_display_grid, container, false);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
@@ -165,7 +166,7 @@ public class GifGridFragment extends Fragment {
      */
     private void setupGrid() {
         mGifAdapter = new GifAdapter(mContext, mCallback, Collections.EMPTY_LIST);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, NUM_COLS);
+        GridLayoutManager gridLayoutManager = new GridAutofitLayoutManager(mContext, COL_WIDTH);
         mGifsView.setLayoutManager(gridLayoutManager);
         mGifsView.setAdapter(mGifAdapter);
         mScrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {

@@ -21,20 +21,22 @@ public class MainActivity extends AppCompatActivity implements GifGridFragment.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        GifGridFragment fragment = GifGridFragment.newInstance(this);
-        Bundle args = new Bundle();
-        // Initially show trending gifs
-        args.putString(SEARCH_TYPE, EXTRA_TRENDING);
-        fragment.setArguments(args);
-        String simpleName = GifGridFragment.class.getSimpleName();
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame,
-                fragment, simpleName).addToBackStack(simpleName).commit();
+        if (savedInstanceState == null) {
+            GifGridFragment fragment = GifGridFragment.newInstance();
+            Bundle args = new Bundle();
+            // Initially show trending gifs
+            args.putString(SEARCH_TYPE, EXTRA_TRENDING);
+            fragment.setArguments(args);
+            String simpleName = GifGridFragment.class.getSimpleName();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame,
+                    fragment, simpleName).addToBackStack(simpleName).commit();
+        }
     }
 
     // Implementation of gif search callback
     @Override
     public void onSearch(String searchKey) {
-        GifGridFragment fragment = GifGridFragment.newInstance(this);
+        GifGridFragment fragment = GifGridFragment.newInstance();
         Bundle args = new Bundle();
         args.putString(SEARCH_TYPE, EXTRA_SEARCH);
         args.putString(SEARCH_QUERY, searchKey);
