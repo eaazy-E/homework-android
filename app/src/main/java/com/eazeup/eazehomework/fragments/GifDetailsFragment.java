@@ -92,7 +92,10 @@ public class GifDetailsFragment extends Fragment {
                     int newHeight = (screenWidth * gifOriginalHeight) / gifOriginalWidth;
                     // Load the gif into the webview
                     WebView gifWebView = new WebView(getContext());
-                    gifWebView.loadUrl(mData.images.original.url);
+                    StringBuffer htmlData = new StringBuffer().append("<html><body><img src=\'")
+                            .append(mData.images.original.url)
+                            .append("\' width=100%\' /></body></html>");
+                    gifWebView.loadData(htmlData.toString(), "text/html", "UTF-8");
                     // Set the height and width and add it into the layout
                     gifWebView.setLayoutParams(new LinearLayout.LayoutParams(newWidth, newHeight));
                     gifWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
