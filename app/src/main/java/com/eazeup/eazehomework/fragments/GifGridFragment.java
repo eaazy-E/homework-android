@@ -151,6 +151,7 @@ public class GifGridFragment extends Fragment {
             mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
+                    mGifAdapter.clear();
                     if (TextUtils.isEmpty(mSearchString)) {
                         doGetTrending();
                     } else {

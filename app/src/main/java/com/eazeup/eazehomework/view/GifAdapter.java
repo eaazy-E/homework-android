@@ -40,6 +40,10 @@ public class GifAdapter extends RecyclerView.Adapter<GifAdapter.ViewHolder> {
         }
     }
 
+    public void clear() {
+        mGifs.clear();
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grid, parent, false);
